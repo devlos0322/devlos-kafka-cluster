@@ -124,3 +124,5 @@ JMX-kafka exporter를 이용해 카프카 브로커들의 matric 정보를 수�
 * Kafka / Brokers JVM & OS
 * Kafka Topics / Logs
 * Kafka Cluster / Global HealthCheck
+
+Grafana 데이터 소스 등록시 서버의 외부 IP를 이용한다. 클라이언트에서 API를 다이렉트로 연결하는 방식이기 때문에, Localhost로 설정해 놓으면 데이터를 조회할 수 없다.
