@@ -6,6 +6,7 @@ services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-1
+    user: root
     ports:
       - "2181:2181" #클라이언트 연결을 감지하는 포트
       - "2888"      # 클러스터간 동기화를 위한 포트
@@ -28,6 +29,7 @@ services:
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-2
+    user: root
     ports:
       - "2182:2182"
       - "2888"
@@ -50,6 +52,7 @@ services:
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-3
+    user: root
     ports:
       - "2183:2183"
       - "2888"
@@ -74,6 +77,7 @@ services:
   kafka-1:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-1
+    user: root
     hostname: kafka-1
     depends_on:
       - zookeeper-1
@@ -83,7 +87,7 @@ services:
       - 9091:9091
       - 29091:29091
       - 9991:9991
-    mem_limit: "2g"
+    #mem_limit: "2g"
     environment: 
       KAFKA_BROKER_ID: 1  # 브로커 아이디 지정
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
@@ -108,6 +112,7 @@ services:
   kafka-2:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-2
+    user: root
     hostname: kafka-2
     depends_on:
       - zookeeper-1
@@ -117,7 +122,7 @@ services:
       - 9191:9191
       - 29191:29191
       - 9992:9992
-    mem_limit: "2g"
+    #mem_limit: "2g"
     environment: 
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
@@ -142,6 +147,7 @@ services:
   kafka-3:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-3
+    user: root
     hostname: kafka-3
     depends_on:
       - zookeeper-1
@@ -151,7 +157,7 @@ services:
       - 9291:9291
       - 29291:29291
       - 9993:9993
-    mem_limit: "2g"
+    #mem_limit: "2g"
     environment: 
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT:  zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
@@ -178,6 +184,7 @@ services:
   jmx-kafka-1:
     image: "sscaling/jmx-prometheus-exporter"
     container_name: jmx-kafka-1
+    user: root
     ports:
     - "5556"
     depends_on:
@@ -197,6 +204,7 @@ services:
   jmx-kafka-2:
     image: "sscaling/jmx-prometheus-exporter"
     container_name: jmx-kafka-2
+    user: root
     ports:
     - "5556"
     depends_on:
@@ -216,6 +224,7 @@ services:
   jmx-kafka-3:
     image: "sscaling/jmx-prometheus-exporter"
     container_name: jmx-kafka-3
+    user: root
     ports:
     - "5556"
     depends_on:
@@ -238,6 +247,7 @@ services:
   prometheus:
     image: "prom/prometheus"
     container_name: prometheus
+    user: root
     ports:
      - "9090:9090"
     depends_on:
@@ -260,6 +270,7 @@ services:
   grafana:
     image: "grafana/grafana"
     container_name: grafana
+    user: root
     ports:
      - "3000:3000"
     container_name: grafana
@@ -283,6 +294,10 @@ services:
     
   kafka_manager:
     image: hlebalbau/kafka-manager:stable
+    container_name: cmac
+    user: root
+    ports:
+      - 9100:9000
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -290,9 +305,6 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
-    ports:
-      - 9100:9000
-    container_name: cmac
     environment:
       ZK_HOSTS: zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183
       APPLICATION_SECRET: "random-secret"
@@ -311,7 +323,7 @@ services:
   kowl:
     image: quay.io/cloudhut/kowl:v1.4.0
     hostname: kowl
-    restart: on-failure
+    user: root
     volumes:
       - ./etc/kowl/config.yaml:/etc/kowl/config.yaml
     ports:
@@ -319,6 +331,9 @@ services:
     container_name: kowl
     entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
     depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3 
       - kafka-1
       - kafka-2
       - kafka-3  
@@ -327,3 +342,4 @@ services:
       options:
         max-file: "4"
         max-size: "10m"
+    restart: on-failure
