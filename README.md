@@ -15,12 +15,24 @@ Docker copmose 기반 동작하는 Kafka 인프라를 구축한다.
 
 ### 1.2. 설정 방법
 
-.env 파일의 로그인 정보 수정
+* .env 파일의 로그인 정보 수정
+    
+    ```yml
+    # .env
+    ID=devlos
+    PW=devlos0322@
+    ```
 
-```shell
-ID=devlos
-PW=devlos0322@
-```
+* 카프카 Advertised listners 주소 설정
+    
+    ```yml
+    # .env
+    SERVER_URI=localhost
+    ```
+
+
+
+### 1.3. 실행 방법
 
 docker-compose 파일 실행
 
@@ -28,17 +40,17 @@ docker-compose 파일 실행
 docker-compose up -d
 ```
 
-### 1.3. 관리툴 접근
+### 1.4. 관리툴 접근
 
 * CMAC (http://host-ip:9100/)
 * Kowl (http://host-ip:9200/)
 
-### 1.4. 모니터링 툴 접근
+### 1.5. 모니터링 툴 접근
 
 * Prometheus (http://host-ip:9090/)
 * Grafana (http://host-ip:3000/)
 
-### 1.5. Log 관리
+### 1.6. Log 관리
 
 * 카프카 로그, 주키퍼 로그, 프로메테우스 matric 정보는 호스트에 저장된다.
 * 로그 : pwd /logs
